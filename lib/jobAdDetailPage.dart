@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class JobAdDetailPage extends StatelessWidget {
   final Map<String, String> jobAd;
 
-  JobAdDetailPage({required this.jobAd});
+  const JobAdDetailPage({super.key, required this.jobAd});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,9 @@ class JobAdDetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 162, 219),
         foregroundColor: Colors.white,
-        title: Text('İş İlanı Detayı'),
+        title: const Text('İş İlanı Detayı'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -46,11 +46,17 @@ class JobAdDetailPage extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           ),
+          const SizedBox(
+            height: 40,
+          ),
           Expanded(
-            child: Text(value ?? 'N/A'),
+            child: Text(
+              value ?? 'N/A',
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ],
       ),

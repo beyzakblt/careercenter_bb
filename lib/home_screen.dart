@@ -4,11 +4,14 @@ import 'package:flutter_proje/job_ads.dart';
 import 'package:flutter_proje/userhomepage.dart'; // userhomepage.dart dosyasını import edin
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _photoSizeAnimation;
   late Animation<double> _photoMarginTopAnimation;
@@ -18,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       vsync: this,
     );
 
@@ -69,8 +72,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 child: Padding(
                   padding: EdgeInsets.only(top: _photoMarginTopAnimation.value),
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * _photoSizeAnimation.value,
-                    height: MediaQuery.of(context).size.height * _photoSizeAnimation.value,
+                    width: MediaQuery.of(context).size.width *
+                        _photoSizeAnimation.value,
+                    height: MediaQuery.of(context).size.height *
+                        _photoSizeAnimation.value,
                     child: Image.asset(
                       'assets/1.jpeg',
                       fit: BoxFit.contain,
@@ -95,11 +100,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => UserHomePage()),
+                          MaterialPageRoute(
+                              builder: (context) => const UserHomePage()),
                         );
                       },
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     PrimaryButton(
                       text: 'İşveren Girişi',
                       onPressed: () {
@@ -107,8 +113,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           context,
                           MaterialPageRoute(
                             builder: (context) => JobAdsPage(
-                              filterDate: DateTime.now(), // Şu anki tarihi varsayılan olarak veriyoruz
-                            ),
+                                // Şu anki tarihi varsayılan olarak veriyoruz
+                                ),
                           ),
                         );
                       },

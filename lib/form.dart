@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart'; // Omni DateTime Picker paketini içe aktar
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore'u içe aktar
 import 'package:flutter_proje/component/primary_button.dart'; // Kendi PrimaryButton widget'ınızı kullanıyorsanız
 
 class FormPage extends StatefulWidget {
-  final Function(String companyName, String jobTitle, String jobDetails, String benefits, String interviewDate, String interviewTime, String interviewLocation)? onSave;
+  final Function(
+      String companyName,
+      String jobTitle,
+      String jobDetails,
+      String benefits,
+      String interviewDate,
+      String interviewTime,
+      String interviewLocation)? onSave;
 
-  FormPage({this.onSave});
+  const FormPage({super.key, this.onSave});
 
   @override
   _FormPageState createState() => _FormPageState();
@@ -17,11 +25,12 @@ class _FormPageState extends State<FormPage> {
   final TextEditingController _jobTitleController = TextEditingController();
   final TextEditingController _jobDetailsController = TextEditingController();
   final TextEditingController _benefitsController = TextEditingController();
-  final TextEditingController _interviewDateController = TextEditingController();
-  final TextEditingController _interviewTimeController = TextEditingController();
-  final TextEditingController _interviewLocationController = TextEditingController();
-
-  DateTime? _selectedDate;
+  final TextEditingController _interviewDateController =
+      TextEditingController();
+  final TextEditingController _interviewTimeController =
+      TextEditingController();
+  final TextEditingController _interviewLocationController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +39,9 @@ class _FormPageState extends State<FormPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 162, 219),
         foregroundColor: Colors.white,
-        title: Text('Yeni İş İlanı Formu'),
+        title: const Text('Yeni İş İlanı Formu'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -48,10 +57,11 @@ class _FormPageState extends State<FormPage> {
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 55, 112, 177).withOpacity(0.2),
+                  color:
+                      const Color.fromARGB(255, 55, 112, 177).withOpacity(0.2),
                   spreadRadius: 2,
                   blurRadius: 6,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -65,26 +75,26 @@ class _FormPageState extends State<FormPage> {
                     labelText: 'Firma Adı',
                     validatorMessage: 'Firma adı boş olamaz',
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   _buildTextFormField(
                     controller: _jobTitleController,
                     labelText: 'İş Unvanı',
                     validatorMessage: 'İş unvanı boş olamaz',
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   _buildTextFormField(
                     controller: _jobDetailsController,
                     labelText: 'İlan Detayları',
                     validatorMessage: 'İlan detayları boş olamaz',
                     maxLines: 3,
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   _buildTextFormField(
                     controller: _benefitsController,
                     labelText: 'Yan Haklar',
                     maxLines: 2,
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   GestureDetector(
                     onTap: () => _selectDate(context),
                     child: AbsorbPointer(
@@ -96,7 +106,7 @@ class _FormPageState extends State<FormPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   GestureDetector(
                     onTap: () => _selectTime(context),
                     child: AbsorbPointer(
@@ -108,28 +118,18 @@ class _FormPageState extends State<FormPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  const SizedBox(height: 16.0),
                   _buildTextFormField(
                     controller: _interviewLocationController,
                     labelText: 'Mülakat Yeri',
                   ),
-                  SizedBox(height: 60),
+                  const SizedBox(height: 60),
                   Center(
                     child: PrimaryButton(
                       text: 'Kaydet',
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          if (widget.onSave != null) {
-                            widget.onSave!(
-                              _companyNameController.text,
-                              _jobTitleController.text,
-                              _jobDetailsController.text,
-                              _benefitsController.text,
-                              _interviewDateController.text,
-                              _interviewTimeController.text,
-                              _interviewLocationController.text,
-                            );
-                          }
+                          _saveToFirestore(); // Veriyi Firestore'a kaydet
                           Navigator.pop(context);
                         }
                       },
@@ -156,7 +156,8 @@ class _FormPageState extends State<FormPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
         border: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
@@ -166,14 +167,14 @@ class _FormPageState extends State<FormPage> {
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: Color.fromARGB(255, 12, 73, 117),
         ),
         hintStyle: TextStyle(
           color: Colors.grey[400],
         ),
       ),
-      style: TextStyle(
+      style: const TextStyle(
         color: Color.fromARGB(255, 1, 26, 44),
       ),
       maxLines: maxLines,
@@ -188,33 +189,52 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  void _selectDate(BuildContext context) {
-    DatePicker.showDatePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime.now(),
-      onConfirm: (date) {
-        setState(() {
-          _selectedDate = date;
-          _interviewDateController.text = '${date.toLocal().toLocal()}'.split(' ')[0];
-        });
-      },
-      currentTime: DateTime.now(),
-      locale: LocaleType.tr, // Türkçe dil seçeneği
-    );
+  void _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showOmniDateTimePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        is24HourMode: true,
+        type: OmniDateTimePickerType.date);
+
+    if (pickedDate != null) {
+      setState(() {
+        _interviewDateController.text =
+            '${pickedDate.toLocal()}'.split(' ')[0]; // Tarih
+      });
+    }
   }
 
-  void _selectTime(BuildContext context) {
-    DatePicker.showTimePicker(
-      context,
-      showTitleActions: true,
-      onConfirm: (time) {
-        setState(() {
-          _interviewTimeController.text = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-        });
-      },
-      currentTime: DateTime.now(),
-      locale: LocaleType.tr, // Türkçe dil seçeneği
-    );
+  void _selectTime(BuildContext context) async {
+    final DateTime? pickedTime = await showOmniDateTimePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        is24HourMode: true,
+        type: OmniDateTimePickerType.time);
+
+    if (pickedTime != null) {
+      setState(() {
+        _interviewTimeController.text =
+            '${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}'; // Saat
+      });
+    }
+  }
+
+  void _saveToFirestore() {
+    final firestore = FirebaseFirestore.instance;
+    firestore.collection('ilanlar').add({
+      'companyName': _companyNameController.text,
+      'jobTitle': _jobTitleController.text,
+      'jobDetails': _jobDetailsController.text,
+      'benefits': _benefitsController.text,
+      'interviewDate': _interviewDateController.text,
+      'interviewTime': _interviewTimeController.text,
+      'interviewLocation': _interviewLocationController.text,
+    }).then((value) {
+      print('İlan başarıyla kaydedildi.');
+    }).catchError((error) {
+      print('İlan kaydedilirken bir hata oluştu: $error');
+    });
   }
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:flutter_proje/component/primary_button.dart';
 
 class EditJobAdPage extends StatefulWidget {
   final Map<String, String> jobAd;
-  final void Function(String, String, String, String, String, String, String) onSave;
+  final void Function(String, String, String, String, String, String, String)
+      onSave;
 
-  EditJobAdPage({required this.jobAd, required this.onSave});
+  const EditJobAdPage({super.key, required this.jobAd, required this.onSave});
 
   @override
   _EditJobAdPageState createState() => _EditJobAdPageState();
@@ -25,13 +26,18 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
   @override
   void initState() {
     super.initState();
-    _companyNameController = TextEditingController(text: widget.jobAd['companyName']);
+    _companyNameController =
+        TextEditingController(text: widget.jobAd['companyName']);
     _jobTitleController = TextEditingController(text: widget.jobAd['jobTitle']);
-    _jobDetailsController = TextEditingController(text: widget.jobAd['jobDetails']);
+    _jobDetailsController =
+        TextEditingController(text: widget.jobAd['jobDetails']);
     _benefitsController = TextEditingController(text: widget.jobAd['benefits']);
-    _interviewDateController = TextEditingController(text: widget.jobAd['interviewDate']);
-    _interviewTimeController = TextEditingController(text: widget.jobAd['interviewTime']);
-    _interviewLocationController = TextEditingController(text: widget.jobAd['interviewLocation']);
+    _interviewDateController =
+        TextEditingController(text: widget.jobAd['interviewDate']);
+    _interviewTimeController =
+        TextEditingController(text: widget.jobAd['interviewTime']);
+    _interviewLocationController =
+        TextEditingController(text: widget.jobAd['interviewLocation']);
   }
 
   @override
@@ -53,9 +59,9 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 162, 219),
         foregroundColor: Colors.white,
-        title: Text('İş İlanını Düzenle'),
+        title: const Text('İş İlanını Düzenle'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -73,26 +79,26 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
                 labelText: 'Firma Adı',
                 validatorMessage: 'Firma adı boş olamaz',
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _buildTextFormField(
                 controller: _jobTitleController,
                 labelText: 'İş Unvanı',
                 validatorMessage: 'İş unvanı boş olamaz',
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _buildTextFormField(
                 controller: _jobDetailsController,
                 labelText: 'İlan Detayları',
                 validatorMessage: 'İlan detayları boş olamaz',
                 maxLines: 3,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _buildTextFormField(
                 controller: _benefitsController,
                 labelText: 'Yan Haklar',
                 maxLines: 2,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               GestureDetector(
                 onTap: () => _selectDate(context),
                 child: AbsorbPointer(
@@ -104,7 +110,7 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               GestureDetector(
                 onTap: () => _selectTime(context),
                 child: AbsorbPointer(
@@ -116,12 +122,12 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _buildTextFormField(
                 controller: _interviewLocationController,
                 labelText: 'Mülakat Yeri',
               ),
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               Center(
                 child: PrimaryButton(
                   text: "Kaydet",
@@ -160,7 +166,8 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
         border: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
@@ -170,14 +177,14 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: Color.fromARGB(255, 12, 73, 117),
         ),
         hintStyle: TextStyle(
           color: Colors.grey[400],
         ),
       ),
-      style: TextStyle(
+      style: const TextStyle(
         color: Color.fromARGB(255, 1, 26, 44),
       ),
       maxLines: maxLines,
@@ -192,32 +199,34 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
     );
   }
 
-  void _selectDate(BuildContext context) {
-    DatePicker.showDatePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime.now(),
-      onConfirm: (date) {
-        setState(() {
-          _interviewDateController.text = '${date.toLocal().toLocal()}'.split(' ')[0];
-        });
-      },
-      currentTime: DateTime.now(),
-      locale: LocaleType.tr, // Türkçe dil seçeneği
-    );
+  void _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showOmniDateTimePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        is24HourMode: true,
+        type: OmniDateTimePickerType.date);
+
+    if (pickedDate != null) {
+      setState(() {
+        _interviewDateController.text = '${pickedDate.toLocal()}'.split(' ')[0];
+      });
+    }
   }
 
-  void _selectTime(BuildContext context) {
-    DatePicker.showTimePicker(
-      context,
-      showTitleActions: true,
-      onConfirm: (time) {
-        setState(() {
-          _interviewTimeController.text = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-        });
-      },
-      currentTime: DateTime.now(),
-      locale: LocaleType.tr, // Türkçe dil seçeneği
-    );
+  void _selectTime(BuildContext context) async {
+    final DateTime? pickedTime = await showOmniDateTimePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        is24HourMode: true,
+        type: OmniDateTimePickerType.time);
+
+    if (pickedTime != null) {
+      setState(() {
+        _interviewTimeController.text =
+            '${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}';
+      });
+    }
   }
 }

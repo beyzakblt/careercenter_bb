@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "371067537879",
+    "project_id": "careercenter-cc625",
+    "storage_bucket": "careercenter-cc625.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371067537879:android:f55910b38bf322fb7d6392",
+        "android_client_info": {
+          "package_name": "com.example.flutter_proje"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwkGS0CRP4fc1BmQT2zT2BmXQBoLGCT38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
