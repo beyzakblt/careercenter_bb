@@ -4,19 +4,28 @@ import 'package:flutter/material.dart';
 class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
+  final double? width;
+  final double? height;
+  final Color? backgroundColor;
 
-  const PrimaryButton({super.key, required this.text, required this.onPressed});
+  const PrimaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.width = 200,
+    this.height = 48,
+    this.backgroundColor = const Color.fromARGB(255, 32, 162, 219),
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200, // Butonun genişliği
-      height: 50, // Butonun yüksekliği
+      width: width, // Butonun genişliği
+      height: height, // Butonun yüksekliği
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(
-              255, 32, 162, 219), // Butonun arka plan rengi
+          backgroundColor: backgroundColor, // Butonun arka plan rengi
           foregroundColor: Colors.white, // Butonun metin rengi
           padding: EdgeInsets.zero, // İç boşlukları sıfırlayın
           shape: RoundedRectangleBorder(

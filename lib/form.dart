@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart'; // Omni DateTime Picker paketini içe aktar
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore'u içe aktar
-import 'package:flutter_proje/component/primary_button.dart'; // Kendi PrimaryButton widget'ınızı kullanıyorsanız
+import 'package:flutter_proje/imagepicker.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_proje/component/primary_button.dart';
+import 'dart:io';
 
 class FormPage extends StatefulWidget {
   final Function(
@@ -11,7 +13,8 @@ class FormPage extends StatefulWidget {
       String benefits,
       String interviewDate,
       String interviewTime,
-      String interviewLocation)? onSave;
+      String interviewLocation,
+      File? companyLogo)? onSave;
 
   const FormPage({super.key, this.onSave});
 
@@ -31,6 +34,8 @@ class _FormPageState extends State<FormPage> {
       TextEditingController();
   final TextEditingController _interviewLocationController =
       TextEditingController();
+
+  File? _companyLogo; // Firma logosu için bir değişken
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +60,10 @@ class _FormPageState extends State<FormPage> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: const Color.fromARGB(255, 55, 112, 177), // Sınır rengi
+                width: 2.0, // Sınır kalınlığı
+              ),
               boxShadow: [
                 BoxShadow(
                   color:
@@ -70,6 +79,8 @@ class _FormPageState extends State<FormPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Firma logosu ve picker aynı hizada olacak
+
                   _buildTextFormField(
                     controller: _companyNameController,
                     labelText: 'Firma Adı',
@@ -123,12 +134,47 @@ class _FormPageState extends State<FormPage> {
                     controller: _interviewLocationController,
                     labelText: 'Mülakat Yeri',
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Text(
+                            'Firma Logosu',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 12, 73, 117),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 100,
+                        ),
+                        Expanded(
+                          child: MyImagePicker(
+                            onImageSelected: (image) {
+                              setState(() {
+                                _companyLogo = image;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 60),
                   Center(
                     child: PrimaryButton(
                       text: 'Kaydet',
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
+                          if (_companyLogo == null) {
+                            // Logo seçilmemişse uyarı göster
+                            _showLogoRequiredDialog(context);
+                            return;
+                          }
                           _saveToFirestore(); // Veriyi Firestore'a kaydet
                           Navigator.pop(context);
                         }
@@ -221,6 +267,26 @@ class _FormPageState extends State<FormPage> {
     }
   }
 
+  void _showLogoRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Uyarı'),
+          content: const Text('Firma logosu seçilmelidir.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Tamam'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _saveToFirestore() {
     final firestore = FirebaseFirestore.instance;
     firestore.collection('ilanlar').add({
@@ -231,6 +297,10 @@ class _FormPageState extends State<FormPage> {
       'interviewDate': _interviewDateController.text,
       'interviewTime': _interviewTimeController.text,
       'interviewLocation': _interviewLocationController.text,
+      'companyLogo': _companyLogo != null
+          ? _companyLogo!
+              .path // Logo dosyasını Firestore'a kaydetmiyoruz, sadece yolunu saklıyoruz
+          : null,
     }).then((value) {
       print('İlan başarıyla kaydedildi.');
     }).catchError((error) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'editJob.dart';
 import 'jobAdDetailPage.dart';
 import 'form.dart'; // FormPage widget'ını import edin
+import 'package:firebase_storage/firebase_storage.dart';
 
 class JobAdsPage extends StatefulWidget {
   const JobAdsPage({super.key});
@@ -34,14 +36,27 @@ class _JobAdsPageState extends State<JobAdsPage> {
             .toList());
   }
 
-  void _addJobAd(
+  Future<void> _addJobAd(
       String companyName,
       String jobTitle,
       String jobDetails,
       String benefits,
       String interviewDate,
       String interviewTime,
-      String interviewLocation) {
+      String interviewLocation,
+      File? jobImage) async {
+    String? imageUrl;
+
+    if (jobImage != null) {
+      // Firebase Storage'a resmi yükleyin
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('job_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final uploadTask = storageRef.putFile(jobImage);
+      final snapshot = await uploadTask.whenComplete(() {});
+      imageUrl = await snapshot.ref.getDownloadURL();
+    }
+
     FirebaseFirestore.instance.collection('ilanlar').add({
       'companyName': companyName,
       'jobTitle': jobTitle,
@@ -50,6 +65,7 @@ class _JobAdsPageState extends State<JobAdsPage> {
       'interviewDate': interviewDate,
       'interviewTime': interviewTime,
       'interviewLocation': interviewLocation,
+      'imageUrl': imageUrl, // Resim URL'sini Firestore'a ekleyin
     });
   }
 
@@ -145,7 +161,9 @@ class _JobAdsPageState extends State<JobAdsPage> {
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16.0),
-                      leading: const Icon(Icons.work),
+                      leading: jobAd['imageUrl'] != null
+                          ? Image.network(jobAd['imageUrl']!)
+                          : const Icon(Icons.work),
                       title: Text(jobAd['jobTitle'] ?? 'N/A'),
                       subtitle: Text(jobAd['jobDetails'] ?? 'N/A'),
                       trailing: Row(
