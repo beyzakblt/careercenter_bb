@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => JobAdsPage(
+                            builder: (context) => const JobAdsPage(
                                 // Şu anki tarihi varsayılan olarak veriyoruz
                                 ),
                           ),

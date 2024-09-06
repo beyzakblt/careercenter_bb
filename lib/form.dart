@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_proje/imagepicker.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Storage için gerekli
 import 'package:flutter_proje/component/primary_button.dart';
 import 'dart:io';
 
@@ -52,136 +53,136 @@ class _FormPageState extends State<FormPage> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(
-                color: const Color.fromARGB(255, 55, 112, 177), // Sınır rengi
-                width: 2.0, // Sınır kalınlığı
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color:
-                      const Color.fromARGB(255, 55, 112, 177).withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 55, 112, 177), // Sınır rengi
+                  width: 2.0, // Sınır kalınlığı
                 ),
-              ],
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Firma logosu ve picker aynı hizada olacak
-
-                  _buildTextFormField(
-                    controller: _companyNameController,
-                    labelText: 'Firma Adı',
-                    validatorMessage: 'Firma adı boş olamaz',
-                  ),
-                  const SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: _jobTitleController,
-                    labelText: 'İş Unvanı',
-                    validatorMessage: 'İş unvanı boş olamaz',
-                  ),
-                  const SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: _jobDetailsController,
-                    labelText: 'İlan Detayları',
-                    validatorMessage: 'İlan detayları boş olamaz',
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: _benefitsController,
-                    labelText: 'Yan Haklar',
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 16.0),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: AbsorbPointer(
-                      child: _buildTextFormField(
-                        controller: _interviewDateController,
-                        labelText: 'Mülakat Tarihi',
-                        keyboardType: TextInputType.datetime,
-                        enabled: false,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  GestureDetector(
-                    onTap: () => _selectTime(context),
-                    child: AbsorbPointer(
-                      child: _buildTextFormField(
-                        controller: _interviewTimeController,
-                        labelText: 'Mülakat Saati',
-                        keyboardType: TextInputType.datetime,
-                        enabled: false,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: _interviewLocationController,
-                    labelText: 'Mülakat Yeri',
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Text(
-                            'Firma Logosu',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color.fromARGB(255, 12, 73, 117),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 100,
-                        ),
-                        Expanded(
-                          child: MyImagePicker(
-                            onImageSelected: (image) {
-                              setState(() {
-                                _companyLogo = image;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Center(
-                    child: PrimaryButton(
-                      text: 'Kaydet',
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          if (_companyLogo == null) {
-                            // Logo seçilmemişse uyarı göster
-                            _showLogoRequiredDialog(context);
-                            return;
-                          }
-                          _saveToFirestore(); // Veriyi Firestore'a kaydet
-                          Navigator.pop(context);
-                        }
-                      },
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(255, 55, 112, 177)
+                        .withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextFormField(
+                      controller: _companyNameController,
+                      labelText: 'Firma Adı',
+                      validatorMessage: 'Firma adı boş olamaz',
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: _jobTitleController,
+                      labelText: 'İş Unvanı',
+                      validatorMessage: 'İş unvanı boş olamaz',
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: _jobDetailsController,
+                      labelText: 'İlan Detayları',
+                      validatorMessage: 'İlan detayları boş olamaz',
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: _benefitsController,
+                      labelText: 'Yan Haklar',
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 16.0),
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: AbsorbPointer(
+                        child: _buildTextFormField(
+                          controller: _interviewDateController,
+                          labelText: 'Mülakat Tarihi',
+                          keyboardType: TextInputType.datetime,
+                          enabled: false,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    GestureDetector(
+                      onTap: () => _selectTime(context),
+                      child: AbsorbPointer(
+                        child: _buildTextFormField(
+                          controller: _interviewTimeController,
+                          labelText: 'Mülakat Saati',
+                          keyboardType: TextInputType.datetime,
+                          enabled: false,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: _interviewLocationController,
+                      labelText: 'Mülakat Yeri',
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 16.0),
+                            child: Text(
+                              'Firma Logosu',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 12, 73, 117),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 100,
+                          ),
+                          Expanded(
+                            child: MyImagePicker(
+                              onImageSelected: (image) {
+                                setState(() {
+                                  _companyLogo = image;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                    Center(
+                      child: PrimaryButton(
+                        text: 'Kaydet',
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            if (_companyLogo == null) {
+                              // Logo seçilmemişse uyarı göster
+                              _showLogoRequiredDialog(context);
+                              return;
+                            }
+                            _saveToFirestore(); // Veriyi Firestore'a kaydet
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -287,24 +288,42 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  void _saveToFirestore() {
-    final firestore = FirebaseFirestore.instance;
-    firestore.collection('ilanlar').add({
-      'companyName': _companyNameController.text,
-      'jobTitle': _jobTitleController.text,
-      'jobDetails': _jobDetailsController.text,
-      'benefits': _benefitsController.text,
-      'interviewDate': _interviewDateController.text,
-      'interviewTime': _interviewTimeController.text,
-      'interviewLocation': _interviewLocationController.text,
-      'companyLogo': _companyLogo != null
-          ? _companyLogo!
-              .path // Logo dosyasını Firestore'a kaydetmiyoruz, sadece yolunu saklıyoruz
-          : null,
-    }).then((value) {
+  void _saveToFirestore() async {
+    if (_companyLogo == null) {
+      // Firma logosu seçilmediyse uyarı göster
+      _showLogoRequiredDialog(context);
+      return;
+    }
+
+    try {
+      // Firebase Storage referansı oluştur
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('company_logos/${DateTime.now().millisecondsSinceEpoch}.png');
+
+      // Logo dosyasını yükle
+      final uploadTask = storageRef.putFile(_companyLogo!);
+      final snapshot = await uploadTask.whenComplete(() => {});
+
+      // Yüklenen dosyanın URL'sini al
+      final logoUrl = await snapshot.ref.getDownloadURL();
+
+      // Veriyi Firestore'a kaydet
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('ilanlar').add({
+        'companyName': _companyNameController.text,
+        'jobTitle': _jobTitleController.text,
+        'jobDetails': _jobDetailsController.text,
+        'benefits': _benefitsController.text,
+        'interviewDate': _interviewDateController.text,
+        'interviewTime': _interviewTimeController.text,
+        'interviewLocation': _interviewLocationController.text,
+        'companyLogo': logoUrl, // Yüklenen resmin URL'si
+      });
+
       print('İlan başarıyla kaydedildi.');
-    }).catchError((error) {
+    } catch (error) {
       print('İlan kaydedilirken bir hata oluştu: $error');
-    });
+    }
   }
 }

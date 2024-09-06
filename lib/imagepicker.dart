@@ -37,10 +37,10 @@ class _MyImagePickerState extends State<MyImagePicker> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             "Fotoğraf Ekle",
           ),
-          content: Text(
+          content: const Text(
             "Firmanızın logosunu ekleyin",
           ),
           actions: [

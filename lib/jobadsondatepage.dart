@@ -18,7 +18,7 @@ class JobAdsOnDatePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 162, 219),
         foregroundColor: Colors.white,
-        title: Text('$formattedDate'),
+        title: Text(formattedDate),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -57,24 +57,28 @@ class JobAdsOnDatePage extends StatelessWidget {
                           color: Colors.black.withOpacity(0.2),
                           spreadRadius: 1,
                           blurRadius: 5,
-                          offset: Offset(0, 3), // Position of the shadow
+                          offset: const Offset(0, 3), // Position of the shadow
                         ),
                       ],
                     ),
                     child: ListTile(
-                      trailing: Icon(Icons.arrow_forward_ios),
+                      trailing: const Icon(Icons.arrow_forward_ios),
                       contentPadding: const EdgeInsets.all(16.0),
-                      leading: const Icon(
-                        size: 35,
-                        Icons.business_center,
-                        color: Color.fromARGB(255, 16, 33, 129),
-                      ),
+                      leading: jobAd['companyLogo'] != null
+                          ? Image.network(
+                              jobAd['companyLogo']!,
+                              width: 50.0, // Genişlik
+                              height: 50.0, // Yükseklik
+                              fit: BoxFit
+                                  .cover, // Görüntüyü kapsayacak şekilde ayarla
+                            )
+                          : const Icon(Icons.image),
                       title: Text(
                         jobAd['jobTitle'] ?? 'N/A',
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       ),
                       subtitle: Text(jobAd['jobDetails'] ?? 'N/A',
-                          style: TextStyle(fontSize: 15)),
+                          style: const TextStyle(fontSize: 15)),
                       onTap: () {
                         Navigator.push(
                           context,

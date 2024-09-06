@@ -24,6 +24,8 @@ class JobAdDetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            _buildLogo(jobAd['companyLogo']),
+            const SizedBox(height: 20),
             _buildDetailRow('Firma Adı:', jobAd['companyName']),
             _buildDetailRow('İş Unvanı:', jobAd['jobTitle']),
             _buildDetailRow('İlan Detayları:', jobAd['jobDetails']),
@@ -55,11 +57,23 @@ class JobAdDetailPage extends StatelessWidget {
           Expanded(
             child: Text(
               value ?? 'N/A',
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildLogo(String? logoUrl) {
+    return logoUrl != null && logoUrl.isNotEmpty
+        ? Image.network(
+            logoUrl,
+            height: 150,
+            errorBuilder: (context, error, stackTrace) {
+              return const Text('Resim yüklenemedi');
+            },
+          )
+        : const Text('Firma logosu bulunamadı.');
   }
 }

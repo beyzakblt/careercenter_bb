@@ -37,15 +37,16 @@ class _JobAdsPageState extends State<JobAdsPage> {
   }
 
   Future<void> _addJobAd(
-      String companyName,
-      String jobTitle,
-      String jobDetails,
-      String benefits,
-      String interviewDate,
-      String interviewTime,
-      String interviewLocation,
-      File? jobImage) async {
-    String? imageUrl;
+    String companyName,
+    String jobTitle,
+    String jobDetails,
+    String benefits,
+    String interviewDate,
+    String interviewTime,
+    String interviewLocation,
+    File? jobImage, // Resim dosyası için parametre
+  ) async {
+    String? logoUrl;
 
     if (jobImage != null) {
       // Firebase Storage'a resmi yükleyin
@@ -54,7 +55,7 @@ class _JobAdsPageState extends State<JobAdsPage> {
           .child('job_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
       final uploadTask = storageRef.putFile(jobImage);
       final snapshot = await uploadTask.whenComplete(() {});
-      imageUrl = await snapshot.ref.getDownloadURL();
+      logoUrl = await snapshot.ref.getDownloadURL();
     }
 
     FirebaseFirestore.instance.collection('ilanlar').add({
@@ -65,7 +66,7 @@ class _JobAdsPageState extends State<JobAdsPage> {
       'interviewDate': interviewDate,
       'interviewTime': interviewTime,
       'interviewLocation': interviewLocation,
-      'imageUrl': imageUrl, // Resim URL'sini Firestore'a ekleyin
+      'companyLogo': logoUrl, // Resim URL'sini Firestore'a ekleyin
     });
   }
 
@@ -161,9 +162,16 @@ class _JobAdsPageState extends State<JobAdsPage> {
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16.0),
-                      leading: jobAd['imageUrl'] != null
-                          ? Image.network(jobAd['imageUrl']!)
-                          : const Icon(Icons.work),
+                      leading: jobAd['companyLogo'] != null &&
+                              jobAd['companyLogo']!.isNotEmpty
+                          ? Image.network(
+                              jobAd['companyLogo']!,
+                              width: 50.0, // Genişlik
+                              height: 50.0, // Yükseklik
+                              fit: BoxFit
+                                  .cover, // Görüntüyü kapsayacak şekilde ayarla
+                            )
+                          : const Icon(Icons.image),
                       title: Text(jobAd['jobTitle'] ?? 'N/A'),
                       subtitle: Text(jobAd['jobDetails'] ?? 'N/A'),
                       trailing: Row(
@@ -183,7 +191,9 @@ class _JobAdsPageState extends State<JobAdsPage> {
                                           benefits,
                                           interviewDate,
                                           interviewTime,
-                                          interviewLocation) {
+                                          interviewLocation,
+                                          jobImage) {
+                                        // `jobImage` parametresini ekledik
                                         _editJobAd(docId, {
                                           'companyName': companyName,
                                           'jobTitle': jobTitle,
@@ -193,6 +203,7 @@ class _JobAdsPageState extends State<JobAdsPage> {
                                           'interviewTime': interviewTime,
                                           'interviewLocation':
                                               interviewLocation,
+                                          // Burada iş ilanının güncellenmiş resmi URL'sini güncelleyin
                                         });
                                       },
                                     ),
@@ -246,7 +257,7 @@ class _JobAdsPageState extends State<JobAdsPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => FormPage(
-                    onSave: _addJobAd,
+                    onSave: _addJobAd, // `onSave` işlevini gönderin
                   ),
                 ),
               );

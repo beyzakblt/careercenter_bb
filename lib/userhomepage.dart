@@ -85,113 +85,115 @@ class _UserHomePageState extends State<UserHomePage> {
           },
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 200.0,
-              child: Image.asset(
-                'assets/2.jpeg',
-                fit: BoxFit.contain,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 200.0,
+                child: Image.asset(
+                  'assets/2.jpeg',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 80.0,
-            child: CarouselSlider(
-              options: CarouselOptions(
-                autoPlayInterval: const Duration(seconds: 2),
-                height: 120.0,
-                viewportFraction: 0.3,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                aspectRatio: 16 / 9,
-                enableInfiniteScroll: true,
-                initialPage: 0,
-              ),
-              items: imgList
-                  .map((item) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: ClipRRect(
-                          child: Image.asset(
-                            item,
-                            fit: BoxFit.contain,
+            SizedBox(
+              height: 80.0,
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  autoPlayInterval: const Duration(seconds: 2),
+                  height: 120.0,
+                  viewportFraction: 0.3,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  aspectRatio: 16 / 9,
+                  enableInfiniteScroll: true,
+                  initialPage: 0,
+                ),
+                items: imgList
+                    .map((item) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: ClipRRect(
+                            child: Image.asset(
+                              item,
+                              fit: BoxFit.contain,
+                            ),
                           ),
-                        ),
-                      ))
-                  .toList(),
+                        ))
+                    .toList(),
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: TableCalendar(
-              locale: "tr_TR",
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-                _navigateToJobAdsOnDatePage(selectedDay);
-              },
-              calendarStyle: CalendarStyle(
-                selectedDecoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  color: Colors.orange,
-                  shape: BoxShape.circle,
-                ),
-                markerDecoration: BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleTextStyle:
-                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              firstDay: DateTime.now(),
-              lastDay: DateTime(2028),
-              eventLoader: (day) {
-                return _interviewDates[day] ?? [];
-              },
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (context, day, events) {
-                  if (events.isEmpty) return SizedBox.shrink();
-
-                  return Positioned(
-                    bottom: 1,
-                    right: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                      width: 8,
-                      height: 8,
-                      child: Center(
-                        child: Text(
-                          '${events.length}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              child: TableCalendar(
+                locale: "tr_TR",
+                focusedDay: _focusedDay,
+                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
+                  _navigateToJobAdsOnDatePage(selectedDay);
                 },
+                calendarStyle: const CalendarStyle(
+                  selectedDecoration: BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                  todayDecoration: BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                  markerDecoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                headerStyle: const HeaderStyle(
+                  formatButtonVisible: false,
+                  titleTextStyle:
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                firstDay: DateTime.now(),
+                lastDay: DateTime(2028),
+                eventLoader: (day) {
+                  return _interviewDates[day] ?? [];
+                },
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, day, events) {
+                    if (events.isEmpty) return const SizedBox.shrink();
+
+                    return Positioned(
+                      bottom: 1,
+                      right: 1,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
+                        width: 8,
+                        height: 8,
+                        child: Center(
+                          child: Text(
+                            '${events.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

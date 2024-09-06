@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:flutter_proje/component/primary_button.dart';
+import 'package:flutter_proje/imagepicker.dart'; // Resim picker'ı için import
+import 'dart:io';
 
 class EditJobAdPage extends StatefulWidget {
-  final Map<String, String> jobAd;
-  final void Function(String, String, String, String, String, String, String)
-      onSave;
+  final Map<String, dynamic>
+      jobAd; // Logo URL'yi de desteklemesi için `dynamic` türü kullanıldı
+  final void Function(
+      String, String, String, String, String, String, String, File?) onSave;
 
   const EditJobAdPage({super.key, required this.jobAd, required this.onSave});
 
@@ -22,6 +25,8 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
   late TextEditingController _interviewDateController;
   late TextEditingController _interviewTimeController;
   late TextEditingController _interviewLocationController;
+
+  File? _companyLogo; // Firma logosu için değişken
 
   @override
   void initState() {
@@ -67,87 +72,118 @@ class _EditJobAdPageState extends State<EditJobAdPage> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTextFormField(
-                controller: _companyNameController,
-                labelText: 'Firma Adı',
-                validatorMessage: 'Firma adı boş olamaz',
-              ),
-              const SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _jobTitleController,
-                labelText: 'İş Unvanı',
-                validatorMessage: 'İş unvanı boş olamaz',
-              ),
-              const SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _jobDetailsController,
-                labelText: 'İlan Detayları',
-                validatorMessage: 'İlan detayları boş olamaz',
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _benefitsController,
-                labelText: 'Yan Haklar',
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16.0),
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: AbsorbPointer(
-                  child: _buildTextFormField(
-                    controller: _interviewDateController,
-                    labelText: 'Mülakat Tarihi',
-                    keyboardType: TextInputType.datetime,
-                    enabled: false,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTextFormField(
+                  controller: _companyNameController,
+                  labelText: 'Firma Adı',
+                  validatorMessage: 'Firma adı boş olamaz',
+                ),
+                const SizedBox(height: 16.0),
+                _buildTextFormField(
+                  controller: _jobTitleController,
+                  labelText: 'İş Unvanı',
+                  validatorMessage: 'İş unvanı boş olamaz',
+                ),
+                const SizedBox(height: 16.0),
+                _buildTextFormField(
+                  controller: _jobDetailsController,
+                  labelText: 'İlan Detayları',
+                  validatorMessage: 'İlan detayları boş olamaz',
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 16.0),
+                _buildTextFormField(
+                  controller: _benefitsController,
+                  labelText: 'Yan Haklar',
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: AbsorbPointer(
+                    child: _buildTextFormField(
+                      controller: _interviewDateController,
+                      labelText: 'Mülakat Tarihi',
+                      keyboardType: TextInputType.datetime,
+                      enabled: false,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              GestureDetector(
-                onTap: () => _selectTime(context),
-                child: AbsorbPointer(
-                  child: _buildTextFormField(
-                    controller: _interviewTimeController,
-                    labelText: 'Mülakat Saati',
-                    keyboardType: TextInputType.datetime,
-                    enabled: false,
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () => _selectTime(context),
+                  child: AbsorbPointer(
+                    child: _buildTextFormField(
+                      controller: _interviewTimeController,
+                      labelText: 'Mülakat Saati',
+                      keyboardType: TextInputType.datetime,
+                      enabled: false,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _interviewLocationController,
-                labelText: 'Mülakat Yeri',
-              ),
-              const SizedBox(height: 60),
-              Center(
-                child: PrimaryButton(
-                  text: "Kaydet",
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      widget.onSave(
-                        _companyNameController.text,
-                        _jobTitleController.text,
-                        _jobDetailsController.text,
-                        _benefitsController.text,
-                        _interviewDateController.text,
-                        _interviewTimeController.text,
-                        _interviewLocationController.text,
-                      );
-                      Navigator.pop(context);
-                    }
-                  },
+                const SizedBox(height: 16.0),
+                _buildTextFormField(
+                  controller: _interviewLocationController,
+                  labelText: 'Mülakat Yeri',
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          'Firma Logosu',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 12, 73, 117),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 100),
+                      Expanded(
+                        child: MyImagePicker(
+                          onImageSelected: (image) {
+                            setState(() {
+                              _companyLogo = image;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 60),
+                Center(
+                  child: PrimaryButton(
+                    text: "Kaydet",
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        widget.onSave(
+                          _companyNameController.text,
+                          _jobTitleController.text,
+                          _jobDetailsController.text,
+                          _benefitsController.text,
+                          _interviewDateController.text,
+                          _interviewTimeController.text,
+                          _interviewLocationController.text,
+                          _companyLogo, // Logo dosyasını ekleyin
+                        );
+                        Navigator.pop(context);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
