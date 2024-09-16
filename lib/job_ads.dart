@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_proje/home_screen.dart';
 import 'dart:io';
 import 'editJob.dart';
 import 'jobAdDetailPage.dart';
@@ -120,7 +121,8 @@ class _JobAdsPageState extends State<JobAdsPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
           },
         ),
       ),
@@ -166,14 +168,18 @@ class _JobAdsPageState extends State<JobAdsPage> {
                               jobAd['companyLogo']!.isNotEmpty
                           ? Image.network(
                               jobAd['companyLogo']!,
-                              width: 50.0, // Genişlik
-                              height: 50.0, // Yükseklik
+                              width: 80.0, // Genişlik
+                              height: 80.0, // Yükseklik
                               fit: BoxFit
-                                  .cover, // Görüntüyü kapsayacak şekilde ayarla
+                                  .contain, // Görüntüyü kapsayacak şekilde ayarla
                             )
-                          : const Icon(Icons.image),
-                      title: Text(jobAd['jobTitle'] ?? 'N/A'),
-                      subtitle: Text(jobAd['jobDetails'] ?? 'N/A'),
+                          : null, // Eğer resim yoksa hiçbir şey gösterilmez
+
+                      title: Text(
+                        jobAd['companyName'] ?? 'N/A',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(jobAd['jobTitle'] ?? 'N/A'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

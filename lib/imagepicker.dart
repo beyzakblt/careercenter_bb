@@ -47,7 +47,7 @@ class _MyImagePickerState extends State<MyImagePicker> {
             Row(
               children: [
                 PrimaryButton(
-                  width: 150,
+                  width: 120,
                   height: 48,
                   text: "Galeriden Seç",
                   onPressed: () {
@@ -56,11 +56,11 @@ class _MyImagePickerState extends State<MyImagePicker> {
                   },
                 ),
                 const SizedBox(
-                  width: 8,
+                  width: 10,
                 ),
                 PrimaryButton(
                   backgroundColor: const Color.fromARGB(255, 221, 85, 85),
-                  width: 150,
+                  width: 120,
                   height: 48,
                   text: "İptal",
                   onPressed: () {

@@ -67,17 +67,18 @@ class JobAdsOnDatePage extends StatelessWidget {
                       leading: jobAd['companyLogo'] != null
                           ? Image.network(
                               jobAd['companyLogo']!,
-                              width: 50.0, // Genişlik
-                              height: 50.0, // Yükseklik
+                              width: 80.0, // Genişlik
+                              height: 80.0, // Yükseklik
                               fit: BoxFit
-                                  .cover, // Görüntüyü kapsayacak şekilde ayarla
+                                  .contain, // Görüntüyü kapsayacak şekilde ayarla
                             )
                           : const Icon(Icons.image),
                       title: Text(
-                        jobAd['jobTitle'] ?? 'N/A',
-                        style: const TextStyle(fontSize: 20),
+                        jobAd['companyName'] ?? 'N/A',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(jobAd['jobDetails'] ?? 'N/A',
+                      subtitle: Text(jobAd['jobTitle'] ?? 'N/A',
                           style: const TextStyle(fontSize: 15)),
                       onTap: () {
                         Navigator.push(
